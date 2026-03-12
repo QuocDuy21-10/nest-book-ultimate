@@ -1,10 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './entities/book.entity';
@@ -67,5 +62,25 @@ export class BooksService {
     if (!this.books.has(id)) throw new NotFoundException('Book not found');
     this.books.delete(id);
     return { message: 'Book removed successfully' };
+  }
+
+  removeBulk(bookIds: string[]): { deleted: number; notFoundIds: string[] } {
+    const notFoundIds: string[] = [];
+    let deleted = 0;
+    for (const id of bookIds) {
+      if (this.books.has(id)) {
+        this.books.delete(id);
+        deleted++;
+      } else {
+        notFoundIds.push(id);
+      }
+    }
+    return { deleted, notFoundIds };
+  }
+
+  removeAll(): { message: string; deleted: number } {
+    const count = this.books.size;
+    this.books.clear();
+    return { message: 'All books removed successfully', deleted: count };
   }
 }

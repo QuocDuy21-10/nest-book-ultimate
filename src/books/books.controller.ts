@@ -10,8 +10,9 @@ import {
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Book } from './entities/book.entity';
+import { DeleteBooksDto } from './dto/delete-books.dto';
 
 @ApiTags('Books')
 @Controller('books')
@@ -71,6 +72,26 @@ export class BooksController {
   })
   update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
     return this.booksService.update(id, updateBookDto);
+  }
+
+  @Delete('bulk')
+  @ApiOperation({
+    summary: 'Remove multiple books',
+    description:
+      'This endpoint allows you to remove multiple books from the system.',
+  })
+  removeBulk(@Body() deleteBooksDto: DeleteBooksDto) {
+    console.log('deleteBooksDto:', deleteBooksDto);
+    return this.booksService.removeBulk(deleteBooksDto.bookIds);
+  }
+  @Delete('all')
+  @ApiOperation({
+    summary: 'Remove all books',
+    description:
+      'This endpoint allows you to remove all books from the system.',
+  })
+  removeAll() {
+    return this.booksService.removeAll();
   }
 
   @Delete(':id')
